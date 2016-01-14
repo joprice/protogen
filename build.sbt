@@ -33,3 +33,13 @@ lazy val protos = project
   .settings(commonSettings:_*)
   .settings(protobufSettings:_*)
 
+lazy val akka = project
+  .dependsOn(macros, protos)
+  .settings(commonSettings:_*)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "2.2.6" % "test",
+      "com.typesafe.akka" %% "akka-actor" % "2.4.1"
+    )
+  )
+
