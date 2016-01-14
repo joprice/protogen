@@ -21,7 +21,10 @@ lazy val example = project
   .settings(commonSettings:_*)
   .dependsOn(protos, macros)
   .settings(
-    mainClass in (Compile, run) := Some("com.joprice.protobuf.Main")
+    mainClass in (Compile, run) := Some("com.joprice.protobuf.Main"),
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+    )
   )
 
 // protos need to be compiled in another compilation run, or in a jar, in 

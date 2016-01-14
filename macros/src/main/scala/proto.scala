@@ -49,7 +49,7 @@ object proto {
       val descriptor = c.eval(c.Expr[Descriptor](q"${messageClass.companion}.getDescriptor()"))
       val methods = descriptor.getFields.asScala.toList.map(fieldToParameter)
       // tagging this with original protobuf message class for use later by implicit ToProtobuf macro
-      q"@com.joprice.protobuf.protoClass[$messageClass] case class $name(..$methods)"
+      q"@_root_.com.joprice.protobuf.protoClass[$messageClass] case class $name(..$methods)"
     }
 
     def generateClass(messageClass: Symbol) = {
