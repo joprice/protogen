@@ -53,19 +53,9 @@ object proto {
     }
 
     def generateClass(messageClass: Symbol) = {
-      def caseClass(clazz: ClassDef) = List(generateCaseClass(messageClass, clazz.name))
-
-      val members = annottees.map(_.tree).toList match {
-        case (clazz: ClassDef) :: companion :: Nil =>
-          //TODO: required to merge case class trees with existing companion?
-          caseClass(clazz) ++ List(companion)
-        case (clazz: ClassDef) :: Nil =>
-          caseClass(clazz)
-        case _ =>
-          c.abort(c.enclosingPosition, "proto annotation should be used on a class")
+      MacroHelpers.replaceAnnotatedClass(c)(annottees) { classDef =>
+        List(generateCaseClass(messageClass, classDef.name))
       }
-
-      c.Expr[Any](Block(members, Literal(Constant(()))))
     }
 
     c.prefix.tree match {

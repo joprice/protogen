@@ -1,7 +1,6 @@
 package com.joprice.protobuf
 
 import com.google.protobuf.Descriptors.Descriptor
-
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
 
@@ -9,8 +8,7 @@ private[protobuf] object MacroHelpers {
 
   def descriptor(c: blackbox.Context)(messageClass: c.Type) = {
     import c.universe._
-    val messageClassCompanion = messageClass.companion
-    c.eval(c.Expr[Descriptor](q"$messageClassCompanion.getDescriptor()"))
+    c.eval(c.Expr[Descriptor](q"${messageClass.companion}.getDescriptor()"))
   }
 
   def getMessageClass[T: c.WeakTypeTag](c: blackbox.Context): c.Type = {
@@ -25,6 +23,20 @@ private[protobuf] object MacroHelpers {
       )
     }
     annotation.tree.tpe.typeArgs.head
+  }
+
+  def replaceAnnotatedClass(c: blackbox.Context)(annottees: Seq[c.Expr[Any]])(transform: c.universe.ClassDef => List[c.universe.Tree]) = {
+    import c.universe._
+    val members = annottees.map(_.tree).toList match {
+      case (clazz: ClassDef) :: companion :: Nil =>
+        transform(clazz) ++ List(companion)
+      case (clazz: ClassDef) :: Nil =>
+        transform(clazz)
+      case _ =>
+        c.abort(c.enclosingPosition, "Expected annotation to be used on a class")
+    }
+
+    c.Expr[Any](Block(members, Literal(Constant(()))))
   }
 
 }

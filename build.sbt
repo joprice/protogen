@@ -17,9 +17,16 @@ lazy val macros = project
     )
   )
 
+// protos need to be compiled in another compilation run, or in a jar, in 
+// order to be used by the macros
+lazy val protos = project
+  .settings(commonSettings:_*)
+  .settings(protobufSettings:_*)
+
 lazy val example = project
   .settings(commonSettings:_*)
-  .dependsOn(protos, macros)
+  .dependsOn(macros, protos)
+  .aggregate(macros, protos)
   .settings(
     mainClass in (Compile, run) := Some("com.joprice.protobuf.Main"),
     libraryDependencies ++= Seq(
@@ -27,19 +34,15 @@ lazy val example = project
     )
   )
 
-// protos need to be compiled in another compilation run, or in a jar, in 
-// order to be used by the macros
-lazy val protos = project
-  .settings(commonSettings:_*)
-  .settings(protobufSettings:_*)
-
 lazy val akka = project
   .dependsOn(macros, protos)
+  .aggregate(macros, protos)
   .settings(commonSettings:_*)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "2.2.6" % "test",
-      "com.typesafe.akka" %% "akka-actor" % "2.4.1"
+      "com.typesafe.akka" %% "akka-actor" % "2.4.1",
+      "com.typesafe.akka" %% "akka-testkit" % "2.4.1"
     )
   )
 
