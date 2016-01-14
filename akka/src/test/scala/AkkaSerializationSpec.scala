@@ -56,7 +56,7 @@ class AkkaSerializationSpec(_system: ActorSystem)
     val s = SerializationExtension(system)
 
     val original = Message(id = Option(1), name = "abc")
-    s.deserialize(s.serialize(original).get, classOf[Message])
+    original === s.deserialize(s.serialize(original).get, classOf[Message])
   }
 
 }
