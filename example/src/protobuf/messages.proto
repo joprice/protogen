@@ -1,6 +1,0 @@
-package messages;
-
-message SampleMessage {
-    optional int32 id = 1;
-    required string name = 2;
-}
